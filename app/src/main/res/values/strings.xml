@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">AiOne</string>
+    <string-array name="currency_options">
+        <item>USD to BDT</item>
+        <item>Yuan to BDT</item>
+        <item>Rupee to BDT</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

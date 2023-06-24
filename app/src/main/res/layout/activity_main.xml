@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#D2F8D3"
+    android:weightSum="7"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:weightSum="2"
+        android:padding="5sp"
+        android:orientation="horizontal">
+
+    <Button
+        android:layout_weight="1"
+        android:id="@+id/button1"
+        android:background="#4CAF50"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="30sp"
+        android:layout_marginRight="5sp"
+        android:textStyle="bold"
+        android:text="CALCULATOR"
+        android:onClick="onButton1Click" />
+
+    <Button
+        android:layout_weight="1"
+        android:background="#FFC107"
+        android:id="@+id/button2"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="BMI CALC"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:onClick="onButton2Click" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:weightSum="2"
+        android:padding="5sp"
+        android:orientation="horizontal">
+
+    <Button
+        android:layout_weight="1"
+        android:background="#F44336"
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="CURRENCY"
+        android:layout_marginRight="5sp"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:onClick="onButton3Click" />
+
+    <Button
+        android:layout_weight="1"
+        android:id="@+id/button4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="QUIZ"
+        android:background="#CDDC39"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:onClick="onButton4Click" />
+    </LinearLayout>
+
+    <Button
+        android:layout_gravity="center"
+        android:id="@+id/buttonShowScrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DEVELOPER"
+        android:textSize="20sp"
+        android:layout_weight=".5"
+        android:background="#0E7ACF"
+        android:textColor="@color/white"
+        android:onClick="showScrollViewFragment"
+        android:padding="16dp" />
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight=".5"
+        />
+
+
+</LinearLayout>
