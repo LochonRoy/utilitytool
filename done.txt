@@ -1,0 +1,255 @@
+#!/bin/bash
+
+# Associative array to store books with their availability status
+declare -A books
+
+# Associative array to store books with their respective authors
+declare -A books_authors
+
+# Array to store registered users
+declare -a users
+
+# Admin login credentials
+admin_username="admin"
+admin_password="password"
+
+# Function to add a book to the library
+add_book() {
+    read -p "Enter book title: " title
+    read -p "Enter author name: " author
+
+    # Check if the book already exists in the library
+    if [[ -v "books[$title]" ]]; then
+        echo "Book already exists in the library."
+    else
+        # Add book with available status
+        books["$title"]="available"
+        books_authors["$title"]="$author"
+        echo "Book added successfully."
+    fi
+}
+
+# Function to remove a book from the library
+remove_book() {
+    echo "Library Books:"
+    for title in "${!books[@]}"; do
+        echo "$title"
+    done
+
+    read -p "Enter the title of the book to remove: " title
+
+    # Check if the book exists in the library
+    if [[ -v "books[$title]" ]]; then
+        unset "books[$title]"
+        unset "books_authors[$title]"
+        echo "Book removed successfully."
+    else
+        echo "Book not found in the library."
+    fi
+}
+
+# Function to list all books in the library
+list_books() {
+    echo "Library Books:"
+    for title in "${!books[@]}"; do
+        echo "$title (${books[$title]}) - ${books_authors[$title]}"
+    done
+}
+
+# Function to search for a book by title
+search_book_by_title() {
+    read -p "Enter the title of the book: " title
+
+    # Check if the book exists in the library
+    if [[ -v "books[$title]" ]]; then
+        echo "Book found: $title (${books[$title]}) - ${books_authors[$title]}"
+    else
+        echo "Book not found in the library."
+    fi
+}
+
+# Function to search for books by author
+search_books_by_author() {
+    read -p "Enter the author name: " author
+    local found=false
+
+    echo "Books by $author:"
+    for title in "${!books[@]}"; do
+        if [[ "${books_authors[$title]}" == "$author" ]]; then
+            echo "$title (${books[$title]})"
+            found=true
+        fi
+    done
+
+    if [[ "$found" == false ]]; then
+        echo "No books found by $author."
+    fi
+}
+
+# Function for user signup
+user_signup() {
+    read -p "Enter your username: " username
+
+    # Check if the username is already taken
+    if [[ " ${users[*]} " =~ " $username " ]]; then
+        echo "Username already exists. Please choose a different username."
+    else
+        users+=("$username")
+        echo "User registered successfully."
+    fi
+}
+
+# Function for user login
+user_login() {
+    read -p "Enter your username: " username
+
+    # Check if the username exists
+    if [[ " ${users[*]} " =~ " $username " ]]; then
+        echo "User logged in successfully."
+        user_menu "$username"
+    else
+        echo "Username not found. Please register or try again."
+    fi
+}
+
+# Function for user menu
+user_menu() {
+    local username=$1
+
+    while true; do
+        echo "User Menu"
+        echo "1. Search for a book by title"
+        echo "2. Search for books by author"
+        echo "3. Borrow a book"
+        echo "4. Return a book"
+        echo "5. Logout"
+
+        read -p "Enter your choice: " choice
+
+        case $choice in
+            1) search_book_by_title;;
+            2) search_books_by_author;;
+            3) borrow_book "$username";;
+            4) return_book "$username";;
+            5) echo "Logging out..."; break;;
+            *) echo "Invalid choice. Please try again.";;
+        esac
+
+        echo
+    done
+}
+
+# Function to borrow a book
+borrow_book() {
+    local username=$1
+
+    echo "Library Books:"
+    for title in "${!books[@]}"; do
+        echo "$title (${books[$title]})"
+    done
+
+    read -p "Enter the title of the book to borrow: " title
+
+    # Check if the book exists in the library
+    if [[ -v "books[$title]" ]]; then
+        if [[ "${books[$title]}" == "available" ]]; then
+            # Update the book's status to borrowed and assign it to the user
+            books["$title"]=$username
+            echo "Book borrowed successfully."
+        else
+            echo "Book is not available for borrowing."
+        fi
+    else
+        echo "Book not found in the library."
+    fi
+}
+
+# Function to return a book
+return_book() {
+    local username=$1
+
+    echo "Books borrowed by $username:"
+    local borrowed_books=()
+    for title in "${!books[@]}"; do
+        if [[ "${books[$title]}" == "$username" ]]; then
+            borrowed_books+=("$title")
+        fi
+    done
+
+    if [[ ${#borrowed_books[@]} -eq 0 ]]; then
+        echo "No books borrowed by $username."
+        return
+    fi
+
+    for ((i=0; i<${#borrowed_books[@]}; i++)); do
+        echo "$(($i+1)). ${borrowed_books[$i]}"
+    done
+
+    read -p "Enter the number of the book to return: " choice
+
+    if [[ $choice -gt 0 && $choice -le ${#borrowed_books[@]} ]]; then
+        local book_title=${borrowed_books[$(($choice-1))]}
+        books["$book_title"]="available"
+        echo "Book returned successfully."
+    else
+        echo "Invalid choice."
+    fi
+}
+
+# Function for admin login
+admin_login() {
+    read -p "Enter admin username: " username
+    read -s -p "Enter admin password: " password
+    echo
+
+    if [[ $username == $admin_username && $password == $admin_password ]]; then
+        echo "Admin logged in successfully."
+        admin_menu
+    else
+        echo "Invalid admin credentials."
+    fi
+}
+
+# Function for admin menu
+admin_menu() {
+    while true; do
+        echo "Admin Menu"
+        echo "1. Add a book"
+        echo "2. Remove a book"
+        echo "3. List all books"
+        echo "4. Logout"
+
+        read -p "Enter your choice: " choice
+
+        case $choice in
+            1) add_book;;
+            2) remove_book;;
+            3) list_books;;
+            4) echo "Logging out..."; break;;
+            *) echo "Invalid choice. Please try again.";;
+        esac
+
+        echo
+    done
+}
+
+# Main menu loop
+while true; do
+    echo "Library Management System"
+    echo "1. Admin Login"
+    echo "2. User Login"
+    echo "3. User Signup"
+    echo "4. Exit"
+
+    read -p "Enter your choice: " choice
+
+    case $choice in
+        1) admin_login;;
+        2) user_login;;
+        3) user_signup;;
+        4) echo "Exiting..."; exit 0;;
+        *) echo "Invalid choice. Please try again.";;
+    esac
+
+    echo
+done
